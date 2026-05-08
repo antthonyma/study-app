@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Study App</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    </head>
+    <body>
+        <header>
+            <h1>Study App</h1>
+            <p>Upload your notes and generate study materials instantly.</p>
+        </header>
+        <main>
+            <div class="card">
+                <h2>Get started</h2>
+                <p>Upload a resource to begin.</p>
+            </div>
+        </main>
+        <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    </body>
+</html>
