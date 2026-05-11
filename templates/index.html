@@ -7,17 +7,38 @@
         <title>Study App</title>
         <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     </head>
+
     <body>
+
         <header>
             <h1>Study App</h1>
             <p>Upload your notes and generate study materials instantly.</p>
         </header>
+
         <main>
             <div class="card">
-                <h2>Get started</h2>
-                <p>Upload a resource to begin.</p>
+                <h2>Upload a source</h2>
+                <p>Accepted formats: PDF or plain text (.txt)</p>
+
+                <form action="/upload" method="post" enctype="multipart/form-data">
+
+                    <div class="form-group">
+                        <label for="source_file">Choose a file</label>
+                        <input type="file" id="source_file" name="source_file" accept=".pdf,.txt" required>
+                    </div>
+
+                    <button type="submit" class="btn">Upload and extract text</button>
+
+                </form>
+
+                {% if error %}
+                    <p class="error-message">{{ error }}</p>
+                {% endif %}
+
             </div>
         </main>
+
         <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+
     </body>
 </html>

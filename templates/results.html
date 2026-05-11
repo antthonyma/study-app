@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Study App — Results</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    </head>
+
+    <body>
+
+        <header>
+            <h1>Study App</h1>
+            <p>Upload your notes or a PDF and generate study materials instantly.</p>
+        </header>
+
+        <main>
+
+            <div class="card">
+                <h2>Uploaded: {{ filename }}</h2>
+                <p>Text extracted successfully. In Phase 3 this will be sent to the AI.</p>
+
+                <a href="/" class="btn">Upload another file</a>
+            </div>
+
+            <div class="card">
+                <h2>Extracted text preview</h2>
+                <pre class="text-preview">{{ text }}</pre>
+            </div>
+
+        </main>
+
+        <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+
+    </body>
+</html>
