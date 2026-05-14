@@ -3,13 +3,18 @@ import os
 from werkzeug.utils import secure_filename
 from PyPDF2 import PdfReader
 from dotenv import load_dotenv
+
+from ai_helper import generate_notes
+
 load_dotenv()
 
 app = Flask(__name__)
 
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
+
 UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), 'uploads')
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
 ALLOWED_EXTENSIONS = {'txt', 'pdf'}
 
 def allowed_file(filename):
@@ -55,8 +60,10 @@ def upload():
 
     if not extracted_text.strip():
         return render_template("index.html", error="Could not extract text from that file. Try a different one.")
-    
-    return render_template("results.html", filename=filename, text=extracted_text)
+
+    notes = generate_notes(extracted_text)
+
+    return render_template("results.html", filename=filename, text=extracted_text, notes=notes)
 
 if __name__ == "__main__":
     app.run(debug=True)

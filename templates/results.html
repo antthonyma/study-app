@@ -18,13 +18,19 @@
 
             <div class="card">
                 <h2>Uploaded: {{ filename }}</h2>
-                <p>Text extracted successfully. In Phase 3 this will be sent to the AI.</p>
-
                 <a href="/" class="btn">Upload another file</a>
             </div>
 
             <div class="card">
-                <h2>Extracted text preview</h2>
+                <h2>Study Notes</h2>
+                <div id="notes-output" class="notes-content">
+                    <div id="notes-raw" style="display:none;">{{ notes|e }}</div>
+                    <div id="notes-rendered"></div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>Source text preview</h2>
                 <pre class="text-preview">{{ text }}</pre>
             </div>
 
