@@ -4,7 +4,7 @@ from werkzeug.utils import secure_filename
 from PyPDF2 import PdfReader
 from dotenv import load_dotenv
 
-from ai_helper import generate_notes
+from ai_helper import generate_notes, generate_flashcards
 
 load_dotenv()
 
@@ -63,7 +63,9 @@ def upload():
 
     notes = generate_notes(extracted_text)
 
-    return render_template("results.html", filename=filename, text=extracted_text, notes=notes)
+    flashcards = generate_flashcards(extracted_text)
+
+    return render_template("results.html", filename=filename, text=extracted_text, notes=notes, flashcards=flashcards)
 
 if __name__ == "__main__":
     app.run(debug=True)

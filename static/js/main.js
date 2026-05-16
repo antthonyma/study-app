@@ -39,8 +39,8 @@ document.addEventListener("DOMContentLoaded", function () {
             html += "</ul>";
             inList = false;
           }
-          const line = trimmed.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
-          html += `<p>${line}</p>`;
+          const aline = trimmed.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+          html += `<p>${aline}</p>`;
         }
       }
       if (inList) {
@@ -52,5 +52,60 @@ document.addEventListener("DOMContentLoaded", function () {
     const renderedHTML = simpleMarkdownToHTML(markdown);
     notesRendered.innerHTML = renderedHTML;
   }
+
+  let currentCardIndex = 0;
+
+  let isFlipped = false;
+
+  function flipCard() {
+    const card = document.getElementById("flashcard");
+
+    if (card) {
+      card.classList.toggle("flipped");
+
+      isFlipped = !isFlipped;
+    }
+  }
+
+  function showCard(index) {
+    if (typeof flashcardData === "undefined") return;
+
+    const frontText = document.getElementById("card-front-text");
+    const backText = document.getElementById("card-back-text");
+    const cardNumDisplay = document.getElementById("current-card-num");
+    const card = document.getElementById("flashcard");
+
+    if (!frontText || !backText || !cardNumDisplay || !card) return;
+
+    card.classList.remove("flipped");
+    isFlipped = false;
+
+    frontText.textContent = flashcardData[index].front;
+    backText.textContent = flashcardData[index].back;
+
+    cardNumDisplay.textContent = index + 1;
+  }
+
+  function nextCard() {
+    if (typeof flashcardData === "undefined") return;
+
+    if (currentCardIndex < flashcardData.length - 1) {
+      currentCardIndex++;
+      showCard(currentCardIndex);
+    }
+  }
+
+  function prevCard() {
+    if (typeof flashcardData === "undefined") return;
+
+    if (currentCardIndex > 0) {
+      currentCardIndex--;
+      showCard(currentCardIndex);
+    }
+  }
+
+  window.flipCard = flipCard;
+  window.nextCard = nextCard;
+  window.prevCard = prevCard;
 
 });

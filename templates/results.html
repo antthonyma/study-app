@@ -29,11 +29,46 @@
                 </div>
             </div>
 
+            {% if flashcards %}
+            <div class="card">
+                <h2>Flashcards</h2>
+                <p class="flashcard-count">Card <span id="current-card-num">1</span> of {{ flashcards|length }}</p>
+
+                <div class="flashcard-container" onclick="flipCard()">
+                    <div class="flashcard" id="flashcard">
+
+                        <div class="flashcard-front">
+                            <p class="flashcard-label">Question</p>
+                            <p class="flashcard-text" id="card-front-text">{{ flashcards[0].front }}</p>
+                        </div>
+
+                        <div class="flashcard-back">
+                            <p class="flashcard-label">Answer</p>
+                            <p class="flashcard-text" id="card-back-text">{{ flashcards[0].back }}</p>
+                        </div>
+
+                    </div>
+                </div>
+
+                <p class="flashcard-hint">Click the card to flip it</p>
+
+                <div class="flashcard-nav">
+
+                    <button class="btn btn-outline" onclick="prevCard()">Previous</button>
+                    <button class="btn btn-outline" onclick="nextCard()">Next</button>
+
+                </div>
+            </div>
+            {% endif %}
+
             <div class="card">
                 <h2>Source text preview</h2>
                 <pre class="text-preview">{{ text }}</pre>
             </div>
 
+            <script>
+                const flashcardData = JSON.parse('{{ flashcards|default([])|tojson|safe }}');
+            </script>
         </main>
 
         <script src="{{ url_for('static', filename='js/main.js') }}"></script>
