@@ -108,4 +108,79 @@ document.addEventListener("DOMContentLoaded", function () {
   window.nextCard = nextCard;
   window.prevCard = prevCard;
 
+
+  function submitQuiz() {
+
+    if (typeof quizData === "undefined" || quizData.length === 0) return;
+
+    let score = 0;
+
+    for (let i = 0; i < quizData.length; i++) {
+
+      const feedbackEl = document.getElementById(`feedback-${i}`);
+
+      const selected = document.querySelector(`input[name="question-${i}"]:checked`);
+
+      const allLabels = document.querySelectorAll(`input[name="question-${i}"]`);
+
+      const correctAnswer = quizData[i].answer;
+
+      if (!selected) {
+        if (feedbackEl) {
+          feedbackEl.textContent = `Skipped — correct answer: ${correctAnswer}`;
+          feedbackEl.className = "question-feedback incorrect";
+        }
+        continue;
+      }
+
+      const userAnswer = selected.value;
+
+      const isCorrect = userAnswer.toLowerCase() === correctAnswer.toLowerCase();
+
+      if (isCorrect) {
+        score++;
+        if (feedbackEl) {
+          feedbackEl.textContent = "Correct!";
+          feedbackEl.className = "question-feedback correct";
+        }
+        selected.closest("label").classList.add("correct");
+
+      } else {
+        if (feedbackEl) {
+          feedbackEl.textContent = `Incorrect — correct answer: ${correctAnswer}`;
+          feedbackEl.className = "question-feedback incorrect";
+        }
+        selected.closest("label").classList.add("incorrect");
+
+        allLabels.forEach(function(input) {
+          if (input.value.toLowerCase() === correctAnswer.toLowerCase()) {
+            input.closest("label").classList.add("correct");
+          }
+        });
+      }
+    }
+
+    const submitBtn = document.getElementById("quiz-submit-btn");
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Quiz submitted";
+      submitBtn.style.opacity = "0.5";
+      submitBtn.style.cursor = "default";
+    }
+
+    const scoreEl = document.getElementById("quiz-score");
+    if (scoreEl) {
+      scoreEl.style.display = "block";
+      scoreEl.textContent = `You scored ${score} out of ${quizData.length}`;
+
+      if (score > quizData.length / 2) {
+        scoreEl.className = "quiz-score good";
+      } else {
+        scoreEl.className = "quiz-score poor";
+      }
+    }
+  }
+
+  window.submitQuiz = submitQuiz;
+
 });

@@ -61,6 +61,82 @@
             </div>
             {% endif %}
 
+            {% if quiz %}
+            <div class="card">
+                <h2>Quiz</h2>
+                <p class="quiz-intro">Answer all questions then click Submit to see your score.</p>
+
+                <div id="quiz-form">
+
+                    {% for question in quiz %}
+                    <div class="quiz-question" id="question-{{ loop.index0 }}">
+
+                        <p class="question-text">
+                            <span class="question-num">{{ loop.index }}.</span>
+                            {{ question.question }}
+                        </p>
+
+                        {% if question.type == "multiple_choice" %}
+                        <div class="options-list">
+
+                            {% set q_index = loop.index0 %}
+
+                            {% for letter, text in question.options.items() %}
+                            <label class="option-label">
+                                <input
+                                    type="radio"
+                                    name="question-{{ q_index }}"
+                                    value="{{ letter }}"
+                                    data-index="{{ q_index }}"
+                                >
+                                <span class="option-letter">{{ letter }}.</span>
+                                {{ text }}
+                            </label>
+                            {% endfor %}
+
+                        </div>
+
+                        {% elif question.type == "true_false" %}
+                        <div class="options-list">
+
+                            {% set q_index = loop.index0 %}
+
+                            <label class="option-label">
+                                <input
+                                    type="radio"
+                                    name="question-{{ q_index }}"
+                                    value="True"
+                                    data-index="{{ q_index }}"
+                                >
+                                True
+                            </label>
+
+                            <label class="option-label">
+                                <input
+                                    type="radio"
+                                    name="question-{{ q_index }}"
+                                    value="False"
+                                    data-index="{{ q_index }}"
+                                >
+                                False
+                            </label>
+
+                        </div>
+                        {% endif %}
+
+                        <div class="question-feedback" id="feedback-{{ loop.index0 }}"></div>
+
+                    </div>
+                    {% endfor %}
+
+                    <button class="btn" id="quiz-submit-btn" onclick="submitQuiz()">Submit quiz</button>
+
+                    <div id="quiz-score" class="quiz-score" style="display:none;"></div>
+
+                </div>
+            </div>
+            {% endif %}
+
             <div class="card">
                 <h2>Source text preview</h2>
                 <pre class="text-preview">{{ text }}</pre>
@@ -68,6 +144,7 @@
 
             <script>
                 const flashcardData = JSON.parse('{{ flashcards|default([])|tojson|safe }}');
+                const quizData = JSON.parse('{{ quiz|default([])|tojson|safe }}');
             </script>
         </main>
 

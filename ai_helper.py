@@ -118,3 +118,112 @@ Source text:
     except Exception as e:
         print(f"Error generating flashcards: {str(e)}")
         return []
+
+
+def generate_quiz(source_text):
+
+    prompt = f"""
+You are a study assistant helping a university student test their knowledge.
+
+Given the following source text, generate exactly 6 quiz questions.
+Use 4 multiple choice questions and 2 true/false questions.
+
+You MUST respond in this exact format and nothing else — no introduction,
+no explanation, no extra text before or after:
+
+QUESTION 1
+TYPE: multiple_choice
+QUESTION: [the question text]
+A: [option A]
+B: [option B]
+C: [option C]
+D: [option D]
+ANSWER: [just the letter: A, B, C, or D]
+
+QUESTION 2
+TYPE: true_false
+QUESTION: [a statement that is either true or false]
+ANSWER: [just the word: True or False]
+
+Follow this pattern for all 6 questions.
+Make sure the questions test real understanding, not just memory of specific words.
+Make wrong answers plausible — not obviously incorrect.
+
+Source text:
+{source_text}
+"""
+
+    try:
+        completion = client.chat.completions.create(
+            model="llama-3.3-70b-versatile",
+            messages=[
+                {
+                    "role": "system",
+                    "content": "You are a study assistant. Always respond in the exact format requested with no extra text whatsoever."
+                },
+                {
+                    "role": "user",
+                    "content": prompt
+                }
+            ],
+            max_tokens=2000
+        )
+
+        raw = completion.choices[0].message.content.strip()
+
+        questions = []
+
+        blocks = raw.split("QUESTION ")[1:]
+
+        for block in blocks:
+            lines = block.strip().splitlines()
+
+            q_type = ""
+            q_text = ""
+            options = {}
+            answer = ""
+
+            for line in lines:
+                line = line.strip()
+
+                if line.startswith("TYPE:"):
+                    q_type = line.replace("TYPE:", "", 1).strip()
+
+                elif line.startswith("QUESTION:"):
+                    q_text = line.replace("QUESTION:", "", 1).strip()
+
+                elif line.startswith("A:"):
+                    options["A"] = line.replace("A:", "", 1).strip()
+
+                elif line.startswith("B:"):
+                    options["B"] = line.replace("B:", "", 1).strip()
+
+                elif line.startswith("C:"):
+                    options["C"] = line.replace("C:", "", 1).strip()
+
+                elif line.startswith("D:"):
+                    options["D"] = line.replace("D:", "", 1).strip()
+
+                elif line.startswith("ANSWER:"):
+                    answer = line.replace("ANSWER:", "", 1).strip()
+
+            if q_type and q_text and answer:
+                if q_type == "multiple_choice" and options:
+                    questions.append({
+                        "type": "multiple_choice",
+                        "question": q_text,
+                        "options": options,
+                        "answer": answer
+                    })
+                elif q_type == "true_false":
+                    questions.append({
+                        "type": "true_false",
+                        "question": q_text,
+                        "answer": answer
+                    })
+
+        return questions if questions else []
+
+    except Exception as e:
+        print(f"Error generating quiz: {str(e)}")
+        return []
