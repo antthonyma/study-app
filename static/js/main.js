@@ -110,53 +110,220 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
   function submitQuiz() {
-
     if (typeof quizData === "undefined" || quizData.length === 0) return;
 
     let score = 0;
 
     for (let i = 0; i < quizData.length; i++) {
-
+      const question = quizData[i];
       const feedbackEl = document.getElementById(`feedback-${i}`);
 
-      const selected = document.querySelector(`input[name="question-${i}"]:checked`);
+      // -------------------------------------------------------
+      // MULTIPLE CHOICE grading
+      // -------------------------------------------------------
+      if (question.type === "multiple_choice") {
+        const selected = document.querySelector(`input[name="question-${i}"]:checked`);
+        const allLabels = document.querySelectorAll(`input[name="question-${i}"]`);
 
-      const allLabels = document.querySelectorAll(`input[name="question-${i}"]`);
-
-      const correctAnswer = quizData[i].answer;
-
-      if (!selected) {
-        if (feedbackEl) {
-          feedbackEl.textContent = `Skipped — correct answer: ${correctAnswer}`;
-          feedbackEl.className = "question-feedback incorrect";
-        }
-        continue;
-      }
-
-      const userAnswer = selected.value;
-
-      const isCorrect = userAnswer.toLowerCase() === correctAnswer.toLowerCase();
-
-      if (isCorrect) {
-        score++;
-        if (feedbackEl) {
-          feedbackEl.textContent = "Correct!";
-          feedbackEl.className = "question-feedback correct";
-        }
-        selected.closest("label").classList.add("correct");
-
-      } else {
-        if (feedbackEl) {
-          feedbackEl.textContent = `Incorrect — correct answer: ${correctAnswer}`;
-          feedbackEl.className = "question-feedback incorrect";
-        }
-        selected.closest("label").classList.add("incorrect");
-
-        allLabels.forEach(function(input) {
-          if (input.value.toLowerCase() === correctAnswer.toLowerCase()) {
-            input.closest("label").classList.add("correct");
+        if (!selected) {
+          if (feedbackEl) {
+            feedbackEl.textContent = `Skipped — correct answer: ${question.answer}`;
+            feedbackEl.className = "question-feedback incorrect";
           }
+          continue;
+        }
+
+        const isCorrect = selected.value.toLowerCase() === question.answer.toLowerCase();
+
+        if (isCorrect) {
+          score++;
+          if (feedbackEl) {
+            feedbackEl.textContent = "Correct!";
+            feedbackEl.className = "question-feedback correct";
+          }
+          selected.closest("label").classList.add("correct");
+        } else {
+          if (feedbackEl) {
+            feedbackEl.textContent = `Incorrect — correct answer: ${question.answer}`;
+            feedbackEl.className = "question-feedback incorrect";
+          }
+          selected.closest("label").classList.add("incorrect");
+          allLabels.forEach(function(input) {
+            if (input.value.toLowerCase() === question.answer.toLowerCase()) {
+              input.closest("label").classList.add("correct");
+            }
+          });
+        }
+
+      // -------------------------------------------------------
+      // TRUE/FALSE grading — same logic as multiple choice
+      // -------------------------------------------------------
+      } else if (question.type === "true_false") {
+        const selected = document.querySelector(`input[name="question-${i}"]:checked`);
+        const allLabels = document.querySelectorAll(`input[name="question-${i}"]`);
+
+        if (!selected) {
+          if (feedbackEl) {
+            feedbackEl.textContent = `Skipped — correct answer: ${question.answer}`;
+            feedbackEl.className = "question-feedback incorrect";
+          }
+          continue;
+        }
+
+        const isCorrect = selected.value.toLowerCase() === question.answer.toLowerCase();
+
+        if (isCorrect) {
+          score++;
+          if (feedbackEl) {
+            feedbackEl.textContent = "Correct!";
+            feedbackEl.className = "question-feedback correct";
+          }
+          selected.closest("label").classList.add("correct");
+        } else {
+          if (feedbackEl) {
+            feedbackEl.textContent = `Incorrect — correct answer: ${question.answer}`;
+            feedbackEl.className = "question-feedback incorrect";
+          }
+          selected.closest("label").classList.add("incorrect");
+          allLabels.forEach(function(input) {
+            if (input.value.toLowerCase() === question.answer.toLowerCase()) {
+              input.closest("label").classList.add("correct");
+            }
+          });
+        }
+
+      // -------------------------------------------------------
+      // FILL IN THE BLANK grading
+      // -------------------------------------------------------
+      } else if (question.type === "fill_blank") {
+        const input = document.getElementById(`fill-blank-${i}`);
+
+        if (!input || input.value.trim() === "") {
+          if (feedbackEl) {
+            feedbackEl.textContent = `Skipped — correct answer: ${question.answer}`;
+            feedbackEl.className = "question-feedback incorrect";
+          }
+          continue;
+        }
+
+        const userAnswer = input.value.toLowerCase().trim();
+        const isCorrect = userAnswer === question.answer.toLowerCase().trim();
+
+        if (isCorrect) {
+          score++;
+          input.classList.add("correct");
+          if (feedbackEl) {
+            feedbackEl.textContent = "Correct!";
+            feedbackEl.className = "question-feedback correct";
+          }
+        } else {
+          input.classList.add("incorrect");
+          if (feedbackEl) {
+            feedbackEl.textContent = `Incorrect — correct answer: ${question.answer}`;
+            feedbackEl.className = "question-feedback incorrect";
+          }
+        }
+
+        input.disabled = true;
+
+      // -------------------------------------------------------
+      // MATCHING grading
+      // -------------------------------------------------------
+      } else if (question.type === "matching") {
+        const selects = document.querySelectorAll(`.matching-select[data-question-index="${i}"]`);
+
+        let anySkipped = false;
+        selects.forEach(function(sel) {
+          if (sel.value === "") anySkipped = true;
         });
+
+        if (anySkipped) {
+          if (feedbackEl) {
+            feedbackEl.textContent = "Incomplete — please match all items before submitting.";
+            feedbackEl.className = "question-feedback incorrect";
+          }
+          continue;
+        }
+
+        let allCorrect = true;
+        selects.forEach(function(sel) {
+          const leftIndex = parseInt(sel.dataset.leftIndex);
+          const selectedRightIndex = parseInt(sel.value);
+          const isMatch = selectedRightIndex === leftIndex;
+
+          if (isMatch) {
+            sel.classList.add("correct");
+          } else {
+            sel.classList.add("incorrect");
+            allCorrect = false;
+          }
+
+          sel.disabled = true;
+        });
+
+        if (allCorrect) {
+          score++;
+          if (feedbackEl) {
+            feedbackEl.textContent = "Correct — all pairs matched!";
+            feedbackEl.className = "question-feedback correct";
+          }
+        } else {
+          if (feedbackEl) {
+            feedbackEl.textContent = "Some pairs were incorrect. Correct matches are highlighted green.";
+            feedbackEl.className = "question-feedback incorrect";
+          }
+        }
+
+      // -------------------------------------------------------
+      // SELECT ALL THAT APPLY grading
+      // -------------------------------------------------------
+      } else if (question.type === "select_all") {
+        const checkboxes = document.querySelectorAll(`input[name="question-${i}"]`);
+
+        const userAnswers = [];
+        checkboxes.forEach(function(cb) {
+          if (cb.checked) userAnswers.push(cb.value);
+        });
+
+        if (userAnswers.length === 0) {
+          if (feedbackEl) {
+            feedbackEl.textContent = `Skipped — correct answers: ${question.answer.join(", ")}`;
+            feedbackEl.className = "question-feedback incorrect";
+          }
+          continue;
+        }
+
+        const correctSorted = [...question.answer].sort().join(",");
+        const userSorted = [...userAnswers].sort().join(",");
+        const isCorrect = correctSorted === userSorted;
+
+        checkboxes.forEach(function(cb) {
+          const shouldBeChecked = question.answer.includes(cb.value);
+          const wasChecked = cb.checked;
+
+          if (shouldBeChecked && wasChecked) {
+            cb.closest("label").classList.add("correct");
+          } else if (!shouldBeChecked && wasChecked) {
+            cb.closest("label").classList.add("incorrect");
+          } else if (shouldBeChecked && !wasChecked) {
+            cb.closest("label").classList.add("correct");
+          }
+
+          cb.disabled = true;
+        });
+
+        if (isCorrect) {
+          score++;
+          if (feedbackEl) {
+            feedbackEl.textContent = "Correct!";
+            feedbackEl.className = "question-feedback correct";
+          }
+        } else {
+          if (feedbackEl) {
+            feedbackEl.textContent = `Incorrect — correct answers: ${question.answer.join(", ")}`;
+            feedbackEl.className = "question-feedback incorrect";
+          }
+        }
       }
     }
 
@@ -172,7 +339,6 @@ document.addEventListener("DOMContentLoaded", function () {
     if (scoreEl) {
       scoreEl.style.display = "block";
       scoreEl.textContent = `You scored ${score} out of ${quizData.length}`;
-
       if (score > quizData.length / 2) {
         scoreEl.className = "quiz-score good";
       } else {

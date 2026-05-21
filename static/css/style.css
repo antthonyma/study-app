@@ -309,3 +309,79 @@ input[type="file"] {
   color: #e65100;
   border: 1px solid #ffb300;
 }
+
+
+.select-all-hint {
+  font-size: 0.85rem;
+  color: #888;
+  margin-bottom: 0.5rem;
+  font-style: italic;
+}
+
+.fill-blank-group {
+  margin-top: 0.5rem;
+}
+
+.fill-blank-input {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  font-family: inherit;
+}
+
+.fill-blank-input.correct {
+  border-color: #4caf50;
+  background-color: #eefbf0;
+}
+
+.fill-blank-input.incorrect {
+  border-color: #e53935;
+  background-color: #fef0f0;
+}
+
+.matching-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-top: 0.5rem;
+}
+
+.matching-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.matching-term {
+  min-width: 160px;
+  font-weight: 500;
+  color: #2c3e50;
+}
+
+.matching-arrow {
+  color: #aaa;
+  font-size: 1.1rem;
+}
+
+.matching-select {
+  flex: 1;
+  padding: 0.4rem 0.6rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-family: inherit;
+  min-width: 180px;
+}
+
+.matching-select.correct {
+  border-color: #4caf50;
+  background-color: #eefbf0;
+}
+
+.matching-select.incorrect {
+  border-color: #e53935;
+  background-color: #fef0f0;
+}

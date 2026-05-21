@@ -76,11 +76,11 @@
                             {{ question.question }}
                         </p>
 
+                        {% set q_index = loop.index0 %}
+
+                        <!-- MULTIPLE CHOICE -->
                         {% if question.type == "multiple_choice" %}
                         <div class="options-list">
-
-                            {% set q_index = loop.index0 %}
-
                             {% for letter, text in question.options.items() %}
                             <label class="option-label">
                                 <input
@@ -93,35 +93,76 @@
                                 {{ text }}
                             </label>
                             {% endfor %}
-
                         </div>
 
+                        <!-- TRUE/FALSE -->
                         {% elif question.type == "true_false" %}
                         <div class="options-list">
-
-                            {% set q_index = loop.index0 %}
-
                             <label class="option-label">
-                                <input
-                                    type="radio"
-                                    name="question-{{ q_index }}"
-                                    value="True"
-                                    data-index="{{ q_index }}"
-                                >
+                                <input type="radio" name="question-{{ q_index }}" value="True" data-index="{{ q_index }}">
                                 True
                             </label>
-
                             <label class="option-label">
-                                <input
-                                    type="radio"
-                                    name="question-{{ q_index }}"
-                                    value="False"
-                                    data-index="{{ q_index }}"
-                                >
+                                <input type="radio" name="question-{{ q_index }}" value="False" data-index="{{ q_index }}">
                                 False
                             </label>
+                        </div>
+
+                        <!-- FILL IN THE BLANK -->
+                        {% elif question.type == "fill_blank" %}
+                        <div class="fill-blank-group">
+                            <input
+                                type="text"
+                                class="fill-blank-input"
+                                id="fill-blank-{{ q_index }}"
+                                data-index="{{ q_index }}"
+                                placeholder="Type your answer here"
+                                autocomplete="off"
+                            >
+                        </div>
+
+                        <!-- MATCHING -->
+                        {% elif question.type == "matching" %}
+                        <div class="matching-group" data-index="{{ q_index }}">
+
+                            {% for term in question.left %}
+                            <div class="matching-row">
+                                <span class="matching-term">{{ term }}</span>
+                                <span class="matching-arrow">→</span>
+                                <select
+                                    class="matching-select"
+                                    data-question-index="{{ q_index }}"
+                                    data-left-index="{{ loop.index0 }}"
+                                >
+                                    <option value="">-- select --</option>
+                                    {% for definition in question.right %}
+                                    <option value="{{ loop.index0 }}">{{ definition }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            {% endfor %}
 
                         </div>
+
+                        <!-- SELECT ALL THAT APPLY -->
+                        {% elif question.type == "select_all" %}
+                        <p class="select-all-hint">Select all that apply</p>
+                        <div class="options-list">
+                            {% for letter, text in question.options.items() %}
+                            <label class="option-label">
+                                <input
+                                    type="checkbox"
+                                    name="question-{{ q_index }}"
+                                    value="{{ letter }}"
+                                    data-index="{{ q_index }}"
+                                    class="select-all-checkbox"
+                                >
+                                <span class="option-letter">{{ letter }}.</span>
+                                {{ text }}
+                            </label>
+                            {% endfor %}
+                        </div>
+
                         {% endif %}
 
                         <div class="question-feedback" id="feedback-{{ loop.index0 }}"></div>
