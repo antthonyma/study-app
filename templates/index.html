@@ -1,44 +1,60 @@
 <!DOCTYPE html>
-
 <html lang="en">
+
     <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Study App</title>
-        <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Study App</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     </head>
 
     <body>
 
-        <header>
-            <h1>Study App</h1>
-            <p>Upload your notes and generate study materials instantly.</p>
-        </header>
+    <header>
+        <h1>Study App</h1>
+        <p>Upload your notes and generate study materials instantly.</p>
+    </header>
 
-        <main>
-            <div class="card">
-                <h2>Upload a source</h2>
-                <p>Accepted formats: PDF or plain text (.txt)</p>
+    <main>
+        <div class="card">
+        <h2>Upload a source</h2>
+        <p>Accepted formats: PDF or plain text (.txt)</p>
 
-                <form action="/upload" method="post" enctype="multipart/form-data">
+        <form action="/upload" method="post" enctype="multipart/form-data">
 
-                    <div class="form-group">
-                        <label for="source_file">Choose a file</label>
-                        <input type="file" id="source_file" name="source_file" accept=".pdf,.txt" required>
-                    </div>
-
-                    <button type="submit" class="btn">Upload and extract text</button>
-
-                </form>
-
-                {% if error %}
-                    <p class="error-message">{{ error }}</p>
-                {% endif %}
-
+            <div class="form-group">
+            <label for="source_file">Choose a file</label>
+            <input type="file" id="source_file" name="source_file" accept=".pdf,.txt" required>
             </div>
-        </main>
 
-        <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+            <button type="submit" class="btn">Upload and generate study materials</button>
+
+        </form>
+
+        {% if error %}
+            <p class="error-message">{{ error }}</p>
+        {% endif %}
+
+        </div>
+
+        {% if history %}
+        <div class="card">
+        <h2>Recent uploads</h2>
+        <p class="history-hint">These are the last files you uploaded in this session.</p>
+        <ul class="history-list">
+            {% for item in history %}
+            <li class="history-item">
+            <span class="history-icon">📄</span>
+            <span class="history-filename">{{ item }}</span>
+            </li>
+            {% endfor %}
+        </ul>
+        </div>
+        {% endif %}
+
+    </main>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 
     </body>
 </html>

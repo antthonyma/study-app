@@ -349,4 +349,45 @@ document.addEventListener("DOMContentLoaded", function () {
 
   window.submitQuiz = submitQuiz;
 
+
+  const navLinks = document.querySelectorAll(".nav-link");
+
+  if (navLinks.length > 0) {
+
+    function updateActiveNav() {
+
+      const scrolledToBottom =
+        window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 10;
+
+      if (scrolledToBottom) {
+        navLinks.forEach(function(link) { link.classList.remove("active"); });
+        const sourceLink = document.querySelector('.nav-link[data-section="section-source"]');
+        if (sourceLink) sourceLink.classList.add("active");
+        return;
+      }
+
+      const sectionIds = ["section-notes", "section-flashcards", "section-quiz", "section-source"];
+
+      let currentSection = sectionIds[0];
+
+      for (const id of sectionIds) {
+        const el = document.getElementById(id);
+        if (!el) continue;
+
+        const rect = el.getBoundingClientRect();
+
+        if (rect.top <= 150) {
+          currentSection = id;
+        }
+      }
+
+      navLinks.forEach(function(link) { link.classList.remove("active"); });
+      const activeLink = document.querySelector(`.nav-link[data-section="${currentSection}"]`);
+      if (activeLink) activeLink.classList.add("active");
+    }
+
+    updateActiveNav();
+
+    window.addEventListener("scroll", updateActiveNav);
+  }
 });

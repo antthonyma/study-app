@@ -11,8 +11,15 @@
 
         <header>
             <h1>Study App</h1>
-            <p>Upload your notes or a PDF and generate study materials instantly.</p>
+            <p>Upload your notes and generate study materials instantly.</p>
         </header>
+
+        <nav class="section-nav">
+            <a href="#section-notes" class="nav-link" data-section="section-notes">Notes</a>
+            <a href="#section-flashcards" class="nav-link" data-section="section-flashcards">Flashcards</a>
+            <a href="#section-quiz" class="nav-link" data-section="section-quiz">Quiz</a>
+            <a href="#section-source" class="nav-link" data-section="section-source">Source</a>
+        </nav>
 
         <main>
 
@@ -21,7 +28,7 @@
                 <a href="/" class="btn">Upload another file</a>
             </div>
 
-            <div class="card">
+            <div class="card" id="section-notes">
                 <h2>Study Notes</h2>
                 <div id="notes-output" class="notes-content">
                     <div id="notes-raw" style="display:none;">{{ notes|e }}</div>
@@ -30,44 +37,38 @@
             </div>
 
             {% if flashcards %}
-            <div class="card">
+            <div class="card" id="section-flashcards">
                 <h2>Flashcards</h2>
                 <p class="flashcard-count">Card <span id="current-card-num">1</span> of {{ flashcards|length }}</p>
 
                 <div class="flashcard-container" onclick="flipCard()">
                     <div class="flashcard" id="flashcard">
-
                         <div class="flashcard-front">
                             <p class="flashcard-label">Question</p>
                             <p class="flashcard-text" id="card-front-text">{{ flashcards[0].front }}</p>
                         </div>
-
                         <div class="flashcard-back">
                             <p class="flashcard-label">Answer</p>
                             <p class="flashcard-text" id="card-back-text">{{ flashcards[0].back }}</p>
                         </div>
-
                     </div>
                 </div>
 
                 <p class="flashcard-hint">Click the card to flip it</p>
 
                 <div class="flashcard-nav">
-
                     <button class="btn btn-outline" onclick="prevCard()">Previous</button>
                     <button class="btn btn-outline" onclick="nextCard()">Next</button>
-
                 </div>
             </div>
             {% endif %}
 
             {% if quiz %}
-            <div class="card">
+            <div class="card" id="section-quiz">
                 <h2>Quiz</h2>
                 <p class="quiz-intro">Answer all questions then click Submit to see your score.</p>
 
                 <div id="quiz-form">
-
                     {% for question in quiz %}
                     <div class="quiz-question" id="question-{{ loop.index0 }}">
 
@@ -78,24 +79,17 @@
 
                         {% set q_index = loop.index0 %}
 
-                        <!-- MULTIPLE CHOICE -->
                         {% if question.type == "multiple_choice" %}
                         <div class="options-list">
                             {% for letter, text in question.options.items() %}
                             <label class="option-label">
-                                <input
-                                    type="radio"
-                                    name="question-{{ q_index }}"
-                                    value="{{ letter }}"
-                                    data-index="{{ q_index }}"
-                                >
+                                <input type="radio" name="question-{{ q_index }}" value="{{ letter }}" data-index="{{ q_index }}">
                                 <span class="option-letter">{{ letter }}.</span>
                                 {{ text }}
                             </label>
                             {% endfor %}
                         </div>
 
-                        <!-- TRUE/FALSE -->
                         {% elif question.type == "true_false" %}
                         <div class="options-list">
                             <label class="option-label">
@@ -108,7 +102,6 @@
                             </label>
                         </div>
 
-                        <!-- FILL IN THE BLANK -->
                         {% elif question.type == "fill_blank" %}
                         <div class="fill-blank-group">
                             <input
@@ -121,19 +114,14 @@
                             >
                         </div>
 
-                        <!-- MATCHING -->
                         {% elif question.type == "matching" %}
                         <div class="matching-group" data-index="{{ q_index }}">
-
                             {% for term in question.left %}
                             <div class="matching-row">
                                 <span class="matching-term">{{ term }}</span>
                                 <span class="matching-arrow">→</span>
-                                <select
-                                    class="matching-select"
-                                    data-question-index="{{ q_index }}"
-                                    data-left-index="{{ loop.index0 }}"
-                                >
+                                {% set left_index = loop.index0 %}
+                                <select class="matching-select" data-question-index="{{ q_index }}" data-left-index="{{ left_index }}">
                                     <option value="">-- select --</option>
                                     {% for definition in question.right %}
                                     <option value="{{ loop.index0 }}">{{ definition }}</option>
@@ -141,22 +129,14 @@
                                 </select>
                             </div>
                             {% endfor %}
-
                         </div>
 
-                        <!-- SELECT ALL THAT APPLY -->
                         {% elif question.type == "select_all" %}
                         <p class="select-all-hint">Select all that apply</p>
                         <div class="options-list">
                             {% for letter, text in question.options.items() %}
                             <label class="option-label">
-                                <input
-                                    type="checkbox"
-                                    name="question-{{ q_index }}"
-                                    value="{{ letter }}"
-                                    data-index="{{ q_index }}"
-                                    class="select-all-checkbox"
-                                >
+                                <input type="checkbox" name="question-{{ q_index }}" value="{{ letter }}" data-index="{{ q_index }}" class="select-all-checkbox">
                                 <span class="option-letter">{{ letter }}.</span>
                                 {{ text }}
                             </label>
@@ -171,14 +151,12 @@
                     {% endfor %}
 
                     <button class="btn" id="quiz-submit-btn" onclick="submitQuiz()">Submit quiz</button>
-
                     <div id="quiz-score" class="quiz-score" style="display:none;"></div>
-
                 </div>
             </div>
             {% endif %}
 
-            <div class="card">
+            <div class="card" id="section-source">
                 <h2>Source text preview</h2>
                 <pre class="text-preview">{{ text }}</pre>
             </div>

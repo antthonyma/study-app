@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Study App — Generating...</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    </head>
+
+    <body>
+
+    <header>
+        <h1>Study App</h1>
+        <p>Upload your notes and generate study materials instantly.</p>
+    </header>
+
+    <main>
+        <div class="card loading-card">
+
+        <div class="spinner"></div>
+
+        <h2>Generating your study materials</h2>
+        <p class="loading-message" id="loading-message">Analysing your document...</p>
+
+        <div class="progress-bar-track">
+            <div class="progress-bar-fill" id="progress-bar"></div>
+        </div>
+
+        <p class="loading-subtext">This usually takes 10–20 seconds. Please don't close this tab.</p>
+
+        </div>
+    </main>
+
+    <script>
+        const messages = [
+            "Analysing your document...",
+            "Generating study notes...",
+            "Creating flashcards...",
+            "Building quiz questions...",
+            "Almost done..."
+        ];
+
+        let messageIndex = 0;
+        let progress = 0;
+
+        const messageEl = document.getElementById("loading-message");
+        const progressBar = document.getElementById("progress-bar");
+
+        const interval = setInterval(function () {
+            messageIndex = (messageIndex + 1) % messages.length;
+            messageEl.textContent = messages[messageIndex];
+            progress += Math.floor(Math.random() * 10) + 8;
+            if (progress > 92) progress = 92;
+            progressBar.style.width = progress + "%";
+        }, 3000);
+
+        setTimeout(function () {
+            window.location.href = "/generate";
+        }, 800);
+    </script>
+
+    </body>
+</html>
