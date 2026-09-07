@@ -4,6 +4,7 @@ from werkzeug.utils import secure_filename
 from PyPDF2 import PdfReader
 from dotenv import load_dotenv
 from ai_helper import generate_notes, generate_flashcards, generate_quiz
+import time
 
 import uuid
 
@@ -111,7 +112,9 @@ def generate():
     os.remove(temp_path)
 
     notes = generate_notes(extracted_text)
+    time.sleep(15)
     flashcards = generate_flashcards(extracted_text)
+    time.sleep(15)
     quiz = generate_quiz(extracted_text)
 
     history = session.get("history", [])

@@ -227,54 +227,6 @@ document.addEventListener("DOMContentLoaded", function () {
         input.disabled = true;
 
       // -------------------------------------------------------
-      // MATCHING grading
-      // -------------------------------------------------------
-      } else if (question.type === "matching") {
-        const selects = document.querySelectorAll(`.matching-select[data-question-index="${i}"]`);
-
-        let anySkipped = false;
-        selects.forEach(function(sel) {
-          if (sel.value === "") anySkipped = true;
-        });
-
-        if (anySkipped) {
-          if (feedbackEl) {
-            feedbackEl.textContent = "Incomplete — please match all items before submitting.";
-            feedbackEl.className = "question-feedback incorrect";
-          }
-          continue;
-        }
-
-        let allCorrect = true;
-        selects.forEach(function(sel) {
-          const leftIndex = parseInt(sel.dataset.leftIndex);
-          const selectedRightIndex = parseInt(sel.value);
-          const isMatch = selectedRightIndex === leftIndex;
-
-          if (isMatch) {
-            sel.classList.add("correct");
-          } else {
-            sel.classList.add("incorrect");
-            allCorrect = false;
-          }
-
-          sel.disabled = true;
-        });
-
-        if (allCorrect) {
-          score++;
-          if (feedbackEl) {
-            feedbackEl.textContent = "Correct — all pairs matched!";
-            feedbackEl.className = "question-feedback correct";
-          }
-        } else {
-          if (feedbackEl) {
-            feedbackEl.textContent = "Some pairs were incorrect. Correct matches are highlighted green.";
-            feedbackEl.className = "question-feedback incorrect";
-          }
-        }
-
-      // -------------------------------------------------------
       // SELECT ALL THAT APPLY grading
       // -------------------------------------------------------
       } else if (question.type === "select_all") {

@@ -7,7 +7,7 @@ An AI-powered studying application that takes uploaded course materials and auto
 - Upload PDF or plain text (.txt) files
 - AI-generated study notes organized into summary, key concepts, important details, and key takeaways
 - Interactive flashcards with flip animation
-- Auto-generated quizzes with five question types: multiple choice, true/false, fill in the blank, matching, and select all that apply
+- Auto-generated quizzes with five question types: multiple choice, true/false, fill in the blank, and select all that apply
 - Quiz grading with instant feedback and score display
 - Section navigation bar for jumping between content
 - Recent upload history

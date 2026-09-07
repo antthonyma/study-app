@@ -11,15 +11,14 @@ def generate_notes(source_text):
     prompt = f"""
 You are a study assistant helping a university student understand their course material.
 
-Given the following source text, generate clear and well-organized study notes.
+Given the following source text, generate concise and well-organized study notes.
 
 Format your notes like this:
-- Start with a "## Summary" section: 3-5 sentences giving the big picture
-- Then a "## Key Concepts" section: a bullet list of the most important ideas, each with a one-sentence explanation
-- Then a "## Important Details" section: specific facts, dates, formulas, or definitions worth remembering
-- End with a "## Key Takeaways" section: 3 bullet points of the most essential things to remember
+- Start with a "## Summary" section: 2-3 sentences giving the big picture
+- Then a "## Key Concepts" section: a bullet list of up to 5 important ideas, each with a brief explanation
+- Then a "## Key Takeaways" section: 2-3 bullet points of the most essential things to remember
 
-Keep the language clear and student-friendly. Do not copy large chunks of the source text.
+Keep the language clear and student-friendly. Be concise. Do not copy large chunks of the source text.
 
 Source text:
 {source_text}
@@ -27,7 +26,7 @@ Source text:
 
     try:
         completion = client.chat.completions.create(
-            model="llama-3.3-70b-versatile",
+            model="qwen/qwen3.8-27b",
             messages=[
                 {
                     "role": "system",
@@ -38,7 +37,7 @@ Source text:
                     "content": prompt
                 }
             ],
-            max_tokens=1500
+            max_tokens=800
         )
 
         return completion.choices[0].message.content.strip()
@@ -52,7 +51,7 @@ def generate_flashcards(source_text):
     prompt = f"""
 You are a study assistant helping a university student memorize their course material.
 
-Given the following source text, generate exactly 8 flashcards.
+Given the following source text, generate exactly 5 flashcards.
 
 You MUST respond using this exact format and nothing else — no introduction, no explanation,
 no extra text before or after. Just the flashcards in this exact structure:
@@ -65,7 +64,7 @@ CARD 2
 FRONT: [a clear, specific question or term]
 BACK: [a concise answer or definition, 1-2 sentences max]
 
-...and so on up to CARD 8.
+...and so on up to CARD 5.
 
 Make the fronts specific and testable — not vague like "What is X?" but rather
 questions that require real understanding. Mix question types: some definitions,
@@ -77,7 +76,7 @@ Source text:
 
     try:
         completion = client.chat.completions.create(
-            model="llama-3.3-70b-versatile",
+            model="qwen/qwen3.8-27b",
             messages=[
                 {
                     "role": "system",
@@ -88,7 +87,7 @@ Source text:
                     "content": prompt
                 }
             ],
-            max_tokens=1500
+            max_tokens=800
         )
 
         raw = completion.choices[0].message.content.strip()
@@ -125,8 +124,8 @@ def generate_quiz(source_text):
     prompt = f"""
 You are a study assistant helping a university student test their knowledge.
 
-Given the following source text, generate exactly 10 quiz questions.
-Use exactly: 2 multiple choice, 2 true/false, 2 fill in the blank, 2 matching, and 2 select all that apply.
+Given the following source text, generate exactly 6 total quiz questions.
+Use exactly: 2 multiple choice, 2 true/false, 1 fill in the blank, and 1 select all that apply.
 
 You MUST respond in this exact format and nothing else — no introduction,
 no explanation, no extra text before or after.
@@ -153,20 +152,6 @@ TYPE: fill_blank
 QUESTION: [a sentence with exactly one blank represented by _____]
 ANSWER: [the word or short phrase that fills the blank]
 
---- MATCHING FORMAT ---
-QUESTION [n]
-TYPE: matching
-QUESTION: [brief instruction like "Match each term to its definition"]
-LEFT_1: [term 1]
-RIGHT_1: [definition 1]
-LEFT_2: [term 2]
-RIGHT_2: [definition 2]
-LEFT_3: [term 3]
-RIGHT_3: [definition 3]
-LEFT_4: [term 4]
-RIGHT_4: [definition 4]
-PAIRS: 1-1,2-2,3-3,4-4
-
 --- SELECT ALL THAT APPLY FORMAT ---
 QUESTION [n]
 TYPE: select_all
@@ -178,10 +163,9 @@ D: [option D]
 ANSWER: [comma-separated correct letters, e.g. A,C or A,B,D]
 
 Important rules:
-- For matching, PAIRS shows which LEFT matches which RIGHT. The order shown is always the correct pairing — LEFT_1 matches RIGHT_1, etc. Always write PAIRS as 1-1,2-2,3-3,4-4.
 - For select all that apply, always have at least 2 correct answers and at least 1 wrong answer.
 - Make questions test real understanding, not just memorization.
-- Number questions 1 through 10 in order.
+- Number questions 1 through 6 in order.
 
 Source text:
 {source_text}
@@ -189,7 +173,7 @@ Source text:
 
     try:
         completion = client.chat.completions.create(
-            model="llama-3.3-70b-versatile",
+            model="qwen/qwen3.8-27b",
             messages=[
                 {
                     "role": "system",
@@ -200,7 +184,7 @@ Source text:
                     "content": prompt
                 }
             ],
-            max_tokens=3000
+            max_tokens=800
         )
 
         raw = completion.choices[0].message.content.strip()
@@ -275,15 +259,6 @@ Source text:
                         "type": "fill_blank",
                         "question": q_text,
                         "answer": answer.lower()
-                    })
-
-                elif q_type == "matching" and left_items and right_items:
-                    questions.append({
-                        "type": "matching",
-                        "question": q_text,
-                        "left": [left_items[k] for k in sorted(left_items.keys())],
-                        "right": [right_items[k] for k in sorted(right_items.keys())],
-                        "answer": answer
                     })
 
                 elif q_type == "select_all" and options:
